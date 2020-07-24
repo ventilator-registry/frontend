@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 import { axiosWithAuth } from '../../utils/axiosWithAuth';
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         },
 
     },
-    input: {
+    form: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -41,9 +41,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between'
     },
     error: {
-        textAlign: 'left',
-        width: 'auto',
-        margin: '0'
+        
     }
 }));
 
@@ -54,15 +52,24 @@ export default function Login(props) {
 
     const [errors, setErrors] = useState({ username: '', password: '' });
 
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+
     const formSchema = yup.object().shape({
         username: yup
             .string()
-            .required("Must include username address."),
+            .required("Username is a required field."),
         password: yup
             .string()
-            .min(6, "Passwords must be at least 6 characters long.")
+            // .min(6, "Passwords must be at least 6 characters long.")
             .required("Password is Required")
     });
+
+    useEffect(() => {
+        formSchema.isValid(users).then(valid => {
+          setButtonDisabled(!valid);
+        });
+      }, [users]);
+    
 
     const login = () => {
         axiosWithAuth()
@@ -108,6 +115,9 @@ export default function Login(props) {
         })
     }
 
+    const usernameErr = errors.username.length > 0;
+    const passErr = errors.password.length > 0 ;
+
     return (
         <div className={classes.root}>
             <Paper elevation={3} className={classes.paper}>
@@ -120,25 +130,31 @@ export default function Login(props) {
                     </Typography>
                 </div>
                 <Divider variant="middle" />
-                <form className={classes.input}>
+                <form className={classes.form}>
                     <TextField
                         id="filled-username"
                         variant="filled"
                         name="username"
-                        label="Username"
+                        label="Username *"
                         onChange={handleChange}
-                        value={users.username} />
-                    {errors.username.length > 0 ? (<Typography className={classes.error} color='error'>{errors.username}</Typography>) : null}
+                        value={users.username}
+                        helperText={usernameErr ? `${errors.username}` : null}
+                        error={usernameErr}
+                        />
+                    {/* {errors.username.length > 0 ? (<Typography className={classes.error} color='error'>{errors.username}</Typography>) : null} */}
                     <TextField
                         id="filled-password"
                         variant="filled"
                         name="password"
-                        label="Password"
+                        label="Password *"
                         type="password"
                         onChange={handleChange}
-                        value={users.password} />
-                    {errors.password.length > 6 ? (<Typography className={classes.error} color='error'>{errors.password}</Typography>) : null}
-                    <Button variant="contained" color="primary" size="large" onClick={() => login()}>
+                        value={users.password}
+                        helperText={passErr ? `${errors.password}` : null}
+                        error={passErr}
+                         />
+                    {/* {errors.password.length > 6 ? (<Typography className={classes.error} color='error'>{errors.password}</Typography>) : null} */}
+                    <Button disabled={buttonDisabled} variant="contained" color="primary" size="large" onClick={() => login()}>
                         Sign In
                     </Button>
                 </form>
