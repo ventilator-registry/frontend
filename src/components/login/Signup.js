@@ -107,7 +107,7 @@ export default function Signup(props) {
                     </Button>
                 </form>
                 <Typography variant="body2" align="center" style={{ color: "#808080", fontWeight: "600" }}>
-                    Already have an account&nbsp;
+                    Already have an account?&nbsp;
                     <Link to="/">
                         Login
                     </Link>
