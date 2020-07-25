@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '20px 0',
         '& > *': {
             margin: theme.spacing(1.5),
-            width: '25ch',
+            width: '30ch',
         },
     },
     top_section: {
@@ -40,13 +40,12 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'space-between'
     },
-    MuiFormHelperText: {
-        root: {
-            "&$error": {
-            marginLeft: '0'
+    textField: {
+        '& p': {
+            marginLeft: 0,
+            marginRight: 0,
         }
-        },
-    },
+    }
 }));
 
 export default function Login(props) {
@@ -61,19 +60,19 @@ export default function Login(props) {
     const formSchema = yup.object().shape({
         username: yup
             .string()
-            .required("Username is a required field."),
+            .required("Username is required."),
         password: yup
             .string()
             // .min(6, "Passwords must be at least 6 characters long.")
-            .required("Password is Required")
+            .required("Password is required.")
     });
 
     useEffect(() => {
         formSchema.isValid(users).then(valid => {
-          setButtonDisabled(!valid);
+            setButtonDisabled(!valid);
         });
-      }, [users]);
-    
+    }, [users]);
+
 
     const login = () => {
         axiosWithAuth()
@@ -94,24 +93,24 @@ export default function Login(props) {
         e.persist();
 
         yup
-        .reach(formSchema, e.target.name)
-        //we can then run validate using the value
-        .validate(e.target.value)
-        // if the validation is successful, we can clear the error message
-        .then(valid => {
-            setErrors({
-                ...errors,
-                [e.target.name]: ""
+            .reach(formSchema, e.target.name)
+            //we can then run validate using the value
+            .validate(e.target.value)
+            // if the validation is successful, we can clear the error message
+            .then(valid => {
+                setErrors({
+                    ...errors,
+                    [e.target.name]: ""
+                });
+            })
+            /* if the validation is unsuccessful, we can set the error message to the message 
+              returned from yup (that we created in our schema) */
+            .catch(err => {
+                setErrors({
+                    ...errors,
+                    [e.target.name]: err.errors[0]
+                });
             });
-        })
-        /* if the validation is unsuccessful, we can set the error message to the message 
-          returned from yup (that we created in our schema) */
-        .catch(err => {
-            setErrors({
-                ...errors,
-                [e.target.name]: err.errors[0]
-            });
-        });
 
         setUsers({
             ...users,
@@ -120,7 +119,7 @@ export default function Login(props) {
     }
 
     const usernameErr = errors.username.length > 0;
-    const passErr = errors.password.length > 0 ;
+    const passErr = errors.password.length > 0;
 
     return (
         <div className={classes.root}>
@@ -136,6 +135,7 @@ export default function Login(props) {
                 <Divider variant="middle" />
                 <form className={classes.form}>
                     <TextField
+                        className={classes.textField}
                         id="filled-username"
                         variant="filled"
                         name="username"
@@ -144,9 +144,10 @@ export default function Login(props) {
                         value={users.username}
                         helperText={usernameErr ? `${errors.username}` : " "}
                         error={usernameErr}
-                        />
+                    />
                     {/* {errors.username.length > 0 ? (<Typography className={classes.error} color='error'>{errors.username}</Typography>) : null} */}
                     <TextField
+                        className={classes.textField}
                         id="filled-password"
                         variant="filled"
                         name="password"
@@ -156,7 +157,7 @@ export default function Login(props) {
                         value={users.password}
                         helperText={passErr ? `${errors.password}` : " "}
                         error={passErr}
-                         />
+                    />
                     {/* {errors.password.length > 6 ? (<Typography className={classes.error} color='error'>{errors.password}</Typography>) : null} */}
                     <Button disabled={buttonDisabled} variant="contained" color="primary" size="large" onClick={() => login()}>
                         Sign In
