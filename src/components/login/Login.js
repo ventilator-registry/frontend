@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         margin: '20px 0',
         '& > *': {
-            margin: theme.spacing(2.5),
+            margin: theme.spacing(1.5),
             width: '25ch',
         },
     },
@@ -40,9 +40,13 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'space-between'
     },
-    error: {
-        
-    }
+    MuiFormHelperText: {
+        root: {
+            "&$error": {
+            marginLeft: '0'
+        }
+        },
+    },
 }));
 
 export default function Login(props) {
@@ -138,7 +142,7 @@ export default function Login(props) {
                         label="Username *"
                         onChange={handleChange}
                         value={users.username}
-                        helperText={usernameErr ? `${errors.username}` : null}
+                        helperText={usernameErr ? `${errors.username}` : " "}
                         error={usernameErr}
                         />
                     {/* {errors.username.length > 0 ? (<Typography className={classes.error} color='error'>{errors.username}</Typography>) : null} */}
@@ -150,7 +154,7 @@ export default function Login(props) {
                         type="password"
                         onChange={handleChange}
                         value={users.password}
-                        helperText={passErr ? `${errors.password}` : null}
+                        helperText={passErr ? `${errors.password}` : " "}
                         error={passErr}
                          />
                     {/* {errors.password.length > 6 ? (<Typography className={classes.error} color='error'>{errors.password}</Typography>) : null} */}
