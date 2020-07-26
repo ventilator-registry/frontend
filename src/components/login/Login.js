@@ -73,22 +73,6 @@ export default function Login(props) {
         });
     }, [users, formSchema]);
 
-
-    const login = () => {
-        axiosWithAuth()
-            .post('/auth/login', users)
-            .then(res => {
-                localStorage.setItem('token', res.data.token);
-                localStorage.setItem('id', res.data.users_id);
-                localStorage.setItem('name', res.data.name)
-                props.history.push(`/dashboard/${res.data.users_id}`);
-            })
-            .catch(err => {
-                alert("There's been a problem with your login, please check your details and try again.")
-                console.log(err)
-            })
-    }
-
     const handleChange = e => {
         e.persist();
 
@@ -116,6 +100,21 @@ export default function Login(props) {
             ...users,
             [e.target.name]: e.target.value
         })
+    }
+
+    const login = () => {
+        axiosWithAuth()
+            .post('/auth/login', users)
+            .then(res => {
+                localStorage.setItem('token', res.data.token);
+                localStorage.setItem('id', res.data.users_id);
+                localStorage.setItem('name', res.data.name)
+                props.history.push(`/dashboard/${res.data.users_id}`);
+            })
+            .catch(err => {
+                alert("There's been a problem with your login, please check your details and try again.")
+                console.log(err)
+            })
     }
 
     const usernameErr = errors.username.length > 0;
