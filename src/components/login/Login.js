@@ -71,7 +71,7 @@ export default function Login(props) {
         formSchema.isValid(users).then(valid => {
             setButtonDisabled(!valid);
         });
-    }, [users]);
+    }, [users, formSchema]);
 
 
     const login = () => {
