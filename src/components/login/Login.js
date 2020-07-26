@@ -4,8 +4,9 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import * as yup from 'yup';
 import { axiosWithAuth } from '../../utils/axiosWithAuth';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,11 +24,14 @@ const useStyles = makeStyles((theme) => ({
         },
 
     },
-    input: {
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         margin: '20px 0',
         '& > *': {
-            margin: theme.spacing(2.5),
-            width: '25ch',
+            margin: theme.spacing(1.5),
+            width: '30ch',
         },
     },
     top_section: {
@@ -35,6 +39,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between'
+    },
+    textField: {
+        '& p': {
+            marginLeft: 0,
+            marginRight: 0,
+        }
     }
 }));
 
@@ -43,14 +53,28 @@ export default function Login(props) {
 
     const [users, setUsers] = useState({ username: '', password: '' });
 
-    const handleChange = e => {
-        setUsers({
-            ...users,
-            [e.target.name]: e.target.value
-        })
-    }
+    const [errors, setErrors] = useState({ username: '', password: '' });
 
-    const login = e => {
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+
+    const formSchema = yup.object().shape({
+        username: yup
+            .string()
+            .required("Username is required."),
+        password: yup
+            .string()
+            // .min(6, "Passwords must be at least 6 characters long.")
+            .required("Password is required.")
+    });
+
+    useEffect(() => {
+        formSchema.isValid(users).then(valid => {
+            setButtonDisabled(!valid);
+        });
+    }, [users]);
+
+
+    const login = () => {
         axiosWithAuth()
             .post('/auth/login', users)
             .then(res => {
@@ -65,6 +89,38 @@ export default function Login(props) {
             })
     }
 
+    const handleChange = e => {
+        e.persist();
+
+        yup
+            .reach(formSchema, e.target.name)
+            //we can then run validate using the value
+            .validate(e.target.value)
+            // if the validation is successful, we can clear the error message
+            .then(valid => {
+                setErrors({
+                    ...errors,
+                    [e.target.name]: ""
+                });
+            })
+            /* if the validation is unsuccessful, we can set the error message to the message 
+              returned from yup (that we created in our schema) */
+            .catch(err => {
+                setErrors({
+                    ...errors,
+                    [e.target.name]: err.errors[0]
+                });
+            });
+
+        setUsers({
+            ...users,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const usernameErr = errors.username.length > 0;
+    const passErr = errors.password.length > 0;
+
     return (
         <div className={classes.root}>
             <Paper elevation={3} className={classes.paper}>
@@ -77,23 +133,33 @@ export default function Login(props) {
                     </Typography>
                 </div>
                 <Divider variant="middle" />
-                <form className={classes.input}>
+                <form className={classes.form}>
                     <TextField
+                        className={classes.textField}
                         id="filled-username"
                         variant="filled"
                         name="username"
-                        label="Username"
+                        label="Username *"
                         onChange={handleChange}
-                        value={users.username} />
+                        value={users.username}
+                        helperText={usernameErr ? `${errors.username}` : " "}
+                        error={usernameErr}
+                    />
+                    {/* {errors.username.length > 0 ? (<Typography className={classes.error} color='error'>{errors.username}</Typography>) : null} */}
                     <TextField
+                        className={classes.textField}
                         id="filled-password"
                         variant="filled"
                         name="password"
-                        label="Password"
+                        label="Password *"
                         type="password"
                         onChange={handleChange}
-                        value={users.password} />
-                    <Button variant="contained" color="primary" size="large" onClick={() => login()}>
+                        value={users.password}
+                        helperText={passErr ? `${errors.password}` : " "}
+                        error={passErr}
+                    />
+                    {/* {errors.password.length > 6 ? (<Typography className={classes.error} color='error'>{errors.password}</Typography>) : null} */}
+                    <Button disabled={buttonDisabled} variant="contained" color="primary" size="large" onClick={() => login()}>
                         Sign In
                     </Button>
                 </form>

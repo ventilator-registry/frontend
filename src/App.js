@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 import Form from './components/Form';
 import Login from './components/login/Login';
+import Login1 from './components/login/Login1';
 import Signup from './components/login/Signup';
 import Paperbase from './components/Paperbase';
 import Update_Sec from './components/Update_Sec';
