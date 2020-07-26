@@ -62,7 +62,7 @@ function Header(props) {
           <Grid container spacing={1} alignItems="center">
             <Grid item xs />
             <Grid item>
-              <Link className={classes.link} href="https://1mventilators.com/" target="-blank" variant="body2">
+              <Link className={classes.link} href="https://airtoall.org/" target="-blank" variant="body2">
                 1mventilators.com
               </Link>
             </Grid>

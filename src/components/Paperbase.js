@@ -12,8 +12,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        1MVentilators
+      <Link color="inherit" href="https://airtoall.org/">
+        AirToAll
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
